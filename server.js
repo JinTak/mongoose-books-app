@@ -42,7 +42,10 @@ app.get('/api/books', function (req, res) {
 // get one book
 app.get('/api/books/:id', function (req, res) {
   // find one book by its id
+
     db.Book.findById(req.params.id, function (err, Book) { res.json(Book) } );
+
+  
   });
 
 
@@ -60,26 +63,27 @@ app.post('/api/books', function (req, res) {
     if (err) { console.log("ERROR"); }
   });
 
+ 
+
 });
 
 // update book
 app.put('/api/books/:id', function (req, res) {
   // create new book with form data (`req.body`)
-  db.Book.findById(req.params.id, function (err, bookToUpdate) { 
 
-    var updatedBook = new db.Book({
-      title: req.body.title,
-      author: req.body.author,
-      image: req.body.image,
-      releaseDate: req.body.releaseDate
+  if(!req.body.title || !req.body.author || !req.body.image || !req.body.releaseDate ){
+    res.json("Please enter title, author, image, and releaseDate properties.");
+  } else {
+    db.Book.findOneAndUpdate({_id: req.params.id}, {$set:{title:req.body.title, author:req.body.author, image:req.body.image, releaseDate:req.body.releaseDate}}, {new:true}, function(err, book){
+      if(err) {
+        res.json("Book not found.");
+      }
+      else {
+        res.json("Found the Book.");
+        console.log(book);
+      };
     });
-    
-    bookToUpdate.save(function (err, updatedBook) {
-      if (err) return handleError(err);
-      res.send(bookToUpdate);
-    });
-
-  });
+  }
 
 });
 

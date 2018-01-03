@@ -69,3 +69,4 @@ db.Book.remove({}, function(err, books){
     });
   }
 });
+
